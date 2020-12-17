@@ -1,0 +1,30 @@
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.PasswordField?>
+<VBox fx:id="mainBox" fx:controller="ru.gb.lesson6.client.Controller" xmlns:fx="http://javafx.com/fxml" alignment= "CENTER">
+    <HBox fx:id="authPanel">
+        <TextField fx:id="loginField" HBox.hgrow="ALWAYS"/>
+        <PasswordField fx:id="passField" HBox.hgrow="ALWAYS"/>
+        <Button text="Авторизоваться" onAction="#sendAuth" HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <TextArea fx:id="textArea" VBox.vgrow="ALWAYS" editable="false" />
+    <HBox fx:id="msgPanel" visible="false" managed="false">
+        <TextField fx:id="textField" promptText="Введите текс" HBox.hgrow="ALWAYS" onAction="#sendMsg"/>
+
+        <Button fx:id="Отправить" onAction="#sendMsg" prefWidth="70.0" text="send">
+            <HBox.margin>
+                <Insets left="5.0"/>
+            </HBox.margin>
+        </Button>
+
+        <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+        </padding>
+    </HBox>
+
+</VBox>
