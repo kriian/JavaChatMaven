@@ -44,4 +44,24 @@ public class SQLHandler {
             return false;
         }
     }
+
+    public static boolean isSuchNickname(String nickname) {
+        try {
+            ResultSet rs = statement.executeQuery("SELECT nickname FROM users WHERE nickname = '" + nickname + "'");
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static void updateNickname(String newNick, String oldNick) {
+        try {
+            statement.executeUpdate("UPDATE users SET nickname = '"+newNick+"' WHERE nickname = '"+oldNick+"'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

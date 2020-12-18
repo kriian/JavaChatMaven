@@ -69,13 +69,6 @@ public class Controller implements Initializable {
 
     public void setAuthorized(boolean authorized) {
         this.authorized = authorized;
-//        authPanel.setVisible(!authorized);
-//        authPanel.setManaged(!authorized);
-//        msgPanel.setVisible(authorized);
-//        msgPanel.setManaged(authorized);
-//        clientsList.setVisible(authorized);
-//        clientsList.setManaged(authorized);
-
         if (authorized) {
             authPanel.setVisible(false);
             authPanel.setManaged(false);
@@ -157,7 +150,7 @@ public class Controller implements Initializable {
                             String str = in.readUTF();
                             if (!str.startsWith("/")) {
                                 textArea.appendText(str + System.lineSeparator());
-                            } else if (str.startsWith("/clientslist")) {
+                            } else if (str.startsWith("/clientslist") || str.startsWith("/changenick")) {
                                 // /clientslist nick1 nick2 nick3
                                 String[] subStr = str.split(" ");
                                 clients.clear();

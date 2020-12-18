@@ -76,6 +76,12 @@ public class ClientHandler {
                                 } else {
                                     sendMsg("Wrong private message");
                                 }
+                            } else if (str.startsWith("/changenick")) {
+                                // /changenick newNick oldNick
+                                String[] subStr = str.split(" ");
+                                if (!SQLHandler.isSuchNickname(subStr[1])) {
+                                    SQLHandler.updateNickname(subStr[1], subStr[2]);
+                                }
                             }
                         } else {
                             server.broadcastMsg(nickname + ": " + str);
