@@ -3,28 +3,22 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.PasswordField?>
-<VBox fx:id="mainBox" fx:controller="ru.gb.lesson6.client.Controller" xmlns:fx="http://javafx.com/fxml" alignment= "CENTER">
+<?import javafx.scene.control.ListView?>
+<VBox fx:id="mainBox" alignment="CENTER" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/11.0.1"
+      fx:controller="ru.gb.lesson6.client.Controller">
     <HBox fx:id="authPanel">
         <TextField fx:id="loginField" HBox.hgrow="ALWAYS"/>
         <PasswordField fx:id="passField" HBox.hgrow="ALWAYS"/>
         <Button text="Авторизоваться" onAction="#sendAuth" HBox.hgrow="ALWAYS"/>
+        <Button text="Зарегистрироваться" onAction="#registerBtn" HBox.hgrow="ALWAYS"/>
     </HBox>
-
-    <TextArea fx:id="textArea" VBox.vgrow="ALWAYS" editable="false" />
+    <HBox VBox.vgrow="ALWAYS">
+        <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS"/>
+        <ListView fx:id="clientsList" minWidth="200" VBox.vgrow="ALWAYS"/>
+    </HBox>
     <HBox fx:id="msgPanel" visible="false" managed="false">
-        <TextField fx:id="textField" promptText="Введите текс" HBox.hgrow="ALWAYS" onAction="#sendMsg"/>
-
-        <Button fx:id="Отправить" onAction="#sendMsg" prefWidth="70.0" text="send">
-            <HBox.margin>
-                <Insets left="5.0"/>
-            </HBox.margin>
-        </Button>
-
-        <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-        </padding>
+        <TextField fx:id="textField" promptText="Напишите ваше сообщение..." HBox.hgrow="ALWAYS" onAction="#sendMsg"/>
+        <Button text="Отправить" disable="true" fx:id="sendMsgBtn" onAction="#sendMsg"/>
     </HBox>
-
 </VBox>

@@ -11,7 +11,7 @@ public class SQLHandler {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:server/database.db");
             statement = connection.createStatement();
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -26,7 +26,7 @@ public class SQLHandler {
 
     public static String getNickByLoginAndPassword(String login, String password) {
         try {
-            ResultSet rs = statement.executeQuery("SELECT nickname FROM users WHERE login = '" + login + "' AND password = '" + password + "'");
+            ResultSet rs = statement.executeQuery("SELECT nickname FROM users WHERE login ='" + login + "' AND password = '" + password + "'");
             if (rs.next()) {
                 return rs.getString("nickname");
             }
@@ -34,5 +34,14 @@ public class SQLHandler {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static boolean tryToRegister(String login, String password, String nickname) {
+        try {
+            statement.executeUpdate("INSERT INTO users (login, password, nickname) VALUES ('" + login + "','" + password + "','" + nickname + "')");
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
     }
 }

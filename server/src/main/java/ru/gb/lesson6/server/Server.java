@@ -3,19 +3,19 @@ package ru.gb.lesson6.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Vector;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
-    private Vector<ClientHandler> clients;
+    private Map<String, ClientHandler> clients;
 
     public Server() {
         try {
             SQLHandler.connect();
             ServerSocket serverSocket = new ServerSocket(8189);
-            clients = new Vector<>();
-
+            clients = new ConcurrentHashMap<>();
             while (true) {
-                System.out.println("Ждем подключение клиента...");
+                System.out.println("Ждем подключения клиента");
                 Socket socket = serverSocket.accept();
                 ClientHandler c = new ClientHandler(this, socket);
             }
@@ -26,18 +26,43 @@ public class Server {
         }
     }
 
-    public void subscribe(ClientHandler clientHandler) {
-        clients.add(clientHandler);
+    public void subscribe(ClientHandler client) {
+        broadcastMsg(client.getNickname() + " in chat now");
+        clients.put(client.getNickname(), client);
+        client.sendMsg("Welcome to chat");
+        broadcastClientList();
     }
 
-    public void unsubscribe(ClientHandler clientHandler) {
-        clients.remove(clientHandler);
+    public void unsubscribe(ClientHandler client) {
+        broadcastMsg(client.getNickname() + " leaves chat");
+        clients.remove(client.getNickname());
+        broadcastClientList();
     }
 
-    public void broadcast(String msg) {
-        for (ClientHandler c : clients) {
+    public boolean isNickInChat(String nickname) {
+        return clients.containsKey(nickname);
+    }
+
+    public void broadcastMsg(String msg) {
+        for (ClientHandler c : clients.values()) {
             c.sendMsg(msg);
         }
+    }
 
+    public void unicastMsg(String nickname, String msg) {
+        if (isNickInChat(nickname)) {
+            ClientHandler clientHandler = clients.get(nickname);
+            clientHandler.sendMsg(msg);
+        }
+    }
+
+    public void broadcastClientList() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("/clientslist");
+        // /clientslist nick1 nick2 nick3
+        for (String nick : clients.keySet()) {
+            sb.append(" " + nick);
+        }
+        broadcastMsg(sb.toString());
     }
 }

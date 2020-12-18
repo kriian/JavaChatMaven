@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ClientHandler {
-
     private Server server;
     private Socket socket;
     private DataInputStream in;
@@ -23,24 +22,64 @@ public class ClientHandler {
                 try {
                     while (true) {
                         String str = in.readUTF();
-                        String[] subStrings = str.split(" ");
-                        if (subStrings.length >= 3 && subStrings[0].equals("/auth")) {
-                            String nickFromDB = SQLHandler.getNickByLoginAndPassword(subStrings[1], subStrings[2]);
-                            if (nickFromDB != null) {
-                                sendMsg("/authok");
-                                server.subscribe(this);
-                                nickname = nickFromDB;
-                                break;
+                        // /auth login1 password1
+                        if (str.startsWith("/auth")) {
+                            String[] subStrings = str.split(" ", 3);
+                            if (subStrings.length == 3) {
+                                String nickFromDB = SQLHandler.getNickByLoginAndPassword(subStrings[1], subStrings[2]);
+                                if (nickFromDB != null) {
+                                    if (!server.isNickInChat(nickFromDB)) {
+                                        nickname = nickFromDB;
+                                        sendMsg("/authok " + nickname);
+                                        server.subscribe(this);
+                                        break;
+                                    } else {
+                                        sendMsg("This nick already in use");
+                                    }
+                                } else {
+                                    sendMsg("Wrong login/password");
+                                }
+                            } else {
+                                sendMsg("Wrong data format");
+                            }
+                        }
+                        if (str.startsWith("/registration")) {
+                            String[] subStr = str.split(" ");
+                            // /registration login pass nick
+                            if (subStr.length == 4) {
+                                if (SQLHandler.tryToRegister(subStr[1], subStr[2], subStr[3])) {
+                                    sendMsg("Registration complete");
+                                } else {
+                                    sendMsg("Incorrect login/password/nickname");
+                                }
                             }
                         }
                     }
+
                     while (true) {
                         String str = in.readUTF();
                         System.out.println("Сообщение от клиента: " + str);
-                        if (str.equals("/end")) {
-                            break;
+                        if (str.startsWith("/")) {
+                            if (str.equals("/end")) {
+                                break;
+                            } else if (str.startsWith("/w")) {
+                                // /w nick hello m8! hi
+                                final String[] subStrings = str.split(" ", 3);
+                                if (subStrings.length == 3) {
+                                    final String toUserNick = subStrings[1];
+                                    if (server.isNickInChat(toUserNick)) {
+                                        server.unicastMsg(toUserNick, "from " + nickname + ": " + subStrings[2]);
+                                        sendMsg("to " + toUserNick + ": " + subStrings[2]);
+                                    } else {
+                                        sendMsg("User with nick '" + toUserNick + "' not found in chat room");
+                                    }
+                                } else {
+                                    sendMsg("Wrong private message");
+                                }
+                            }
+                        } else {
+                            server.broadcastMsg(nickname + ": " + str);
                         }
-                        this.server.broadcast(nickname + " " + str);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -56,11 +95,11 @@ public class ClientHandler {
                         e.printStackTrace();
                     }
                     try {
-                        this.socket.close();
+                        socket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    this.server.unsubscribe(this);
+                    server.unsubscribe(this);
                 }
             }).start();
         } catch (IOException e) {
@@ -74,5 +113,9 @@ public class ClientHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 }
