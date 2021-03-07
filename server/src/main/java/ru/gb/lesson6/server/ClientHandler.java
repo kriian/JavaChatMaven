@@ -81,6 +81,8 @@ public class ClientHandler {
                                 String[] subStr = str.split(" ");
                                 if (!SQLHandler.isSuchNickname(subStr[1])) {
                                     SQLHandler.updateNickname(subStr[1], subStr[2]);
+                                    server.updateList(subStr[2], subStr[1]);
+                                    nickname = subStr[1];
                                 }
                             }
                         } else {
