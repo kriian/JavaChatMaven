@@ -65,4 +65,10 @@ public class Server {
         }
         broadcastMsg(sb.toString());
     }
+
+    public void updateList(String oldNick, String newNick) {
+        clients.put(newNick, clients.get(oldNick));
+        clients.remove(oldNick);
+        broadcastClientList();
+    }
 }
