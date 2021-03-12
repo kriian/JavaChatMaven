@@ -16,12 +16,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 public class Controller implements Initializable {
 
@@ -49,6 +50,7 @@ public class Controller implements Initializable {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private BufferedReader bufferedReader;
     private String nickname;
     private ObservableList<String> clients;
     private boolean authorized;
@@ -135,6 +137,7 @@ public class Controller implements Initializable {
                 socket = new Socket("localhost", 8189);
                 in = new DataInputStream(socket.getInputStream());
                 out = new DataOutputStream(socket.getOutputStream());
+                bufferedReader = new BufferedReader(new FileReader("demo.txt"));
                 new Thread(() -> {
                     try {
                         while (true) {
@@ -146,6 +149,7 @@ public class Controller implements Initializable {
                                 break;
                             }
                         }
+                        last100LinesOfTheChat();
                         while (true) {
                             String str = in.readUTF();
                             if (!str.startsWith("/")) {
@@ -200,5 +204,28 @@ public class Controller implements Initializable {
             e.printStackTrace();
         }
 
+    }
+
+    private void last100LinesOfTheChat() {
+        String line;
+        List<String> list = new ArrayList<>();
+        try {
+            while ((line = bufferedReader.readLine()) != null) {
+                list.add(line);
+            }
+            int startWith = list.size() - 100;
+            for (int i = startWith; i < list.size(); i++) {
+                textArea.appendText(list.get(i));
+                textArea.appendText(System.lineSeparator());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -3,13 +3,17 @@ package ru.gb.lesson6.server;
 import java.sql.*;
 
 public class SQLHandler {
+    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+    private static final String DB = "jdbc:mysql://localhost/lesson?useUnicode=true&serverTimezone=UTC";
+    private static final String USER = "root";
+    private static final String PASSWORD = "Telefon290787";
     private static Connection connection;
     private static Statement statement;
 
     public static void connect() {
         try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:server/database.db");
+            Class.forName(DRIVER);
+            connection = DriverManager.getConnection(DB, USER, PASSWORD);
             statement = connection.createStatement();
         } catch (Exception e) {
             e.printStackTrace();

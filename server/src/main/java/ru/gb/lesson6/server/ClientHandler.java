@@ -1,8 +1,6 @@
 package ru.gb.lesson6.server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler {
@@ -10,6 +8,7 @@ public class ClientHandler {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
+    private BufferedWriter bufferedWriter;
     private String nickname;
 
     public ClientHandler(Server server, Socket socket) {
@@ -18,6 +17,7 @@ public class ClientHandler {
             this.socket = socket;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
+            bufferedWriter = new BufferedWriter(new FileWriter("demo.txt", true));
             new Thread(() -> {
                 try {
                     while (true) {
@@ -59,8 +59,12 @@ public class ClientHandler {
                     while (true) {
                         String str = in.readUTF();
                         System.out.println("Сообщение от клиента: " + str);
+                        bufferedWriter.append(nickname).append(": ").append(str);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
                         if (str.startsWith("/")) {
                             if (str.equals("/end")) {
+                                server.unsubscribe(this);
                                 break;
                             } else if (str.startsWith("/w")) {
                                 // /w nick hello m8! hi
@@ -103,11 +107,16 @@ public class ClientHandler {
                         e.printStackTrace();
                     }
                     try {
+                        bufferedWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    try {
                         socket.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    server.unsubscribe(this);
+
                 }
             }).start();
         } catch (IOException e) {
