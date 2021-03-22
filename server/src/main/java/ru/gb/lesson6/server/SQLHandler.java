@@ -1,8 +1,12 @@
 package ru.gb.lesson6.server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.*;
 
 public class SQLHandler {
+    private static final Logger LOGGER = LogManager.getLogger(SQLHandler.class);
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String DB = "jdbc:mysql://localhost/lesson?useUnicode=true&serverTimezone=UTC";
     private static final String USER = "root";
@@ -15,16 +19,18 @@ public class SQLHandler {
             Class.forName(DRIVER);
             connection = DriverManager.getConnection(DB, USER, PASSWORD);
             statement = connection.createStatement();
+            LOGGER.info("connect MySQL");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
     public static void disconnect() {
         try {
             connection.close();
+            LOGGER.info("disconnect MySQL");
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -35,7 +41,7 @@ public class SQLHandler {
                 return rs.getString("nickname");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
         return null;
     }
@@ -45,6 +51,7 @@ public class SQLHandler {
             statement.executeUpdate("INSERT INTO users (login, password, nickname) VALUES ('" + login + "','" + password + "','" + nickname + "')");
             return true;
         } catch (SQLException e) {
+            LOGGER.error(e.getMessage(), e);
             return false;
         }
     }
@@ -56,7 +63,7 @@ public class SQLHandler {
                 return true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
         return false;
     }
@@ -65,7 +72,7 @@ public class SQLHandler {
         try {
             statement.executeUpdate("UPDATE users SET nickname = '"+newNick+"' WHERE nickname = '"+oldNick+"'");
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
     }
 }

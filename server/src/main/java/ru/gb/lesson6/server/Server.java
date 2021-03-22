@@ -1,5 +1,8 @@
 package ru.gb.lesson6.server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -7,26 +10,29 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
+    private static final Logger LOGGER = LogManager.getLogger(Server.class);
     private Map<String, ClientHandler> clients;
 
     public Server() {
         try {
             SQLHandler.connect();
             ServerSocket serverSocket = new ServerSocket(8189);
+            LOGGER.info("Сервер запущен, {} {}" , serverSocket.getLocalPort(), " ожидаем подключения...");
             clients = new ConcurrentHashMap<>();
             while (true) {
-                System.out.println("Ждем подключения клиента");
+                LOGGER.info("Ждет подключения клиента");
                 Socket socket = serverSocket.accept();
                 ClientHandler c = new ClientHandler(this, socket);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         } finally {
             SQLHandler.disconnect();
         }
     }
 
     public void subscribe(ClientHandler client) {
+        LOGGER.info("Клиент {} {} ", client.getNickname(), "подключился");
         broadcastMsg(client.getNickname() + " in chat now");
         clients.put(client.getNickname(), client);
         client.sendMsg("Welcome to chat");
@@ -37,6 +43,7 @@ public class Server {
         broadcastMsg(client.getNickname() + " leaves chat");
         clients.remove(client.getNickname());
         broadcastClientList();
+        LOGGER.info("Клиент вышел из чата");
     }
 
     public boolean isNickInChat(String nickname) {

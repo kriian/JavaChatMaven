@@ -1,0 +1,15 @@
+
+INFO  2021-03-22 11:07:59 [main] ru.gb.lesson6.server.SQLHandler (SQLHandler.java:22) - connect MySQL
+INFO  2021-03-22 11:07:59 [main] ru.gb.lesson6.server.Server (Server.java:20) - Сервер запущен, 8189  ожидаем подключения...
+INFO  2021-03-22 11:07:59 [main] ru.gb.lesson6.server.Server (Server.java:23) - Ждет подключения клиента
+INFO  2021-03-22 11:08:24 [main] ru.gb.lesson6.server.Server (Server.java:23) - Ждет подключения клиента
+INFO  2021-03-22 11:08:24 [pool-2-thread-1] ru.gb.lesson6.server.Server (Server.java:35) - Клиент 555 подключился 
+INFO  2021-03-22 11:08:34 [pool-2-thread-1] ru.gb.lesson6.server.ClientHandler (ClientHandler.java:114) - Сообщение от клиента 555 << privet >>
+INFO  2021-03-22 11:08:39 [pool-2-thread-1] ru.gb.lesson6.server.Server (Server.java:46) - Клиент вышел из чата
+ERROR 2021-03-22 11:08:39 [Thread-5] ru.gb.lesson6.client.Controller (Controller.java:167) - null
+java.io.EOFException: null
+	at java.io.DataInputStream.readUnsignedShort(DataInputStream.java:340) ~[?:1.8.0_281]
+	at java.io.DataInputStream.readUTF(DataInputStream.java:589) ~[?:1.8.0_281]
+	at java.io.DataInputStream.readUTF(DataInputStream.java:564) ~[?:1.8.0_281]
+	at ru.gb.lesson6.client.Controller.lambda$connect$4(Controller.java:154) ~[classes/:?]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_281]

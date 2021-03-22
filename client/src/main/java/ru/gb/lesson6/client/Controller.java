@@ -1,8 +1,6 @@
 package ru.gb.lesson6.client;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,6 +13,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
@@ -22,7 +22,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Stream;
 
 public class Controller implements Initializable {
 
@@ -47,6 +46,7 @@ public class Controller implements Initializable {
     @FXML
     ListView<String> clientsList;
 
+    private static final Logger LOGGER = LogManager.getLogger(Controller.class);
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
@@ -107,7 +107,7 @@ public class Controller implements Initializable {
                 textField.requestFocus();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -119,7 +119,7 @@ public class Controller implements Initializable {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -164,29 +164,29 @@ public class Controller implements Initializable {
                             }
                         }
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        LOGGER.error(e.getMessage(), e);
                     } finally {
                         try {
                             in.close();
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            LOGGER.error(e.getMessage(), e);
                         }
                         try {
                             out.close();
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            LOGGER.error(e.getMessage(), e);
                         }
                         try {
                             socket.close();
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            LOGGER.error(e.getMessage(), e);
                         }
                         setAuthorized(false);
                     }
                 }).start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
 
     }
@@ -201,7 +201,7 @@ public class Controller implements Initializable {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
 
     }
@@ -213,18 +213,18 @@ public class Controller implements Initializable {
             while ((line = bufferedReader.readLine()) != null) {
                 list.add(line);
             }
-            int startWith = list.size() - 100;
+            int startWith = list.size() - 10;
             for (int i = startWith; i < list.size(); i++) {
                 textArea.appendText(list.get(i));
                 textArea.appendText(System.lineSeparator());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         } finally {
             try {
                 bufferedReader.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }
